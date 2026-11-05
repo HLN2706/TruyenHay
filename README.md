@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # TruyenHay Lab — môi trường thử nghiệm tấn công web
 
 Phiên bản lab của trang TruyenHay, dùng cho đề tài *"Tăng cường phát hiện tấn công
@@ -192,3 +193,4 @@ truyenhay/
     │   login.html, register.html, profile.html, bookmarks.html, error.html
     └── admin/        # dashboard, users, truyen, truyen_form, comments, logs
 ```
+
