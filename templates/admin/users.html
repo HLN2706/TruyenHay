@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Quản lý người dùng{% endblock %}
+{% block content %}
+<div class="wrap mt">
+  <h1>Người dùng</h1>
+  {% include "admin/_nav.html" %}
+  <div class="panel tbl-scroll">
+    <table class="data">
+      <tr><th>ID</th><th>Tài khoản</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th>Ngày tạo</th><th></th></tr>
+      {% for u in users %}
+      <tr>
+        <td>{{ u['id'] }}</td>
+        <td><a href="{{ url_for('profile', uid=u['id']) }}">{{ u['username'] }}</a></td>
+        <td>{{ u['email'] }}</td>
+        <td>
+          <form class="inline-form" method="post" action="{{ url_for('admin_set_role', uid=u['id']) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <select class="select" name="role">
+              {% for r in ('user', 'moderator', 'admin') %}<option value="{{ r }}" {{ 'selected' if u['role'] == r }}>{{ r }}</option>{% endfor %}
+            </select>
+            <button class="btn btn-ghost btn-sm" type="submit">Đổi</button>
+          </form>
+        </td>
+        <td><span class="pill {{ 'ok' if u['is_active'] else 'bad' }}">{{ 'hoạt động' if u['is_active'] else 'bị khóa' }}</span></td>
+        <td>{{ u['created_at'].strftime('%d/%m/%Y') }}</td>
+        <td>
+          <form method="post" action="{{ url_for('admin_toggle_user', uid=u['id']) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-ghost btn-sm" type="submit">{{ 'Khóa' if u['is_active'] else 'Mở khóa' }}</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

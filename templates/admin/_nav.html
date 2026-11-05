@@ -1,0 +1,11 @@
+<div class="tabs">
+  <a class="chip {{ 'active' if request.endpoint == 'admin_dashboard' }}" href="{{ url_for('admin_dashboard') }}">Tổng quan</a>
+  {% if session.get('role') == 'admin' %}
+  <a class="chip {{ 'active' if request.endpoint == 'admin_users' }}" href="{{ url_for('admin_users') }}">Người dùng</a>
+  <a class="chip {{ 'active' if request.endpoint in ('admin_truyen', 'admin_truyen_form') }}" href="{{ url_for('admin_truyen') }}">Truyện</a>
+  {% endif %}
+  <a class="chip {{ 'active' if request.endpoint == 'admin_comments' }}" href="{{ url_for('admin_comments') }}">Bình luận</a>
+  {% if session.get('role') == 'admin' %}
+  <a class="chip {{ 'active' if request.endpoint == 'admin_logs' }}" href="{{ url_for('admin_logs') }}">Nhật ký</a>
+  {% endif %}
+</div>

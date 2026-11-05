@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% from "_macros.html" import pager %}
+{% block title %}Nhật ký{% endblock %}
+{% block content %}
+<div class="wrap mt">
+  <h1>Nhật ký hệ thống</h1>
+  {% include "admin/_nav.html" %}
+  <div class="tabs">
+    <a class="chip {{ 'active' if kind == 'access' }}" href="{{ url_for('admin_logs', kind='access') }}">Access log (request)</a>
+    <a class="chip {{ 'active' if kind == 'login' }}" href="{{ url_for('admin_logs', kind='login') }}">Login log</a>
+    <a class="chip" href="{{ url_for('admin_logs_export') }}">⬇ Xuất CSV (dataset)</a>
+  </div>
+  <form class="filter-row" method="get">
+    <input type="hidden" name="kind" value="{{ kind }}">
+    <input class="input" type="text" name="ip" placeholder="Lọc theo IP" value="{{ ip }}">
+    <button class="btn btn-ghost btn-sm" type="submit">Lọc</button>
+    <span class="muted">{{ total }} bản ghi</span>
+  </form>
+
+  {% if kind == 'access' %}
+  <div class="panel">
+    <h2>Gán nhãn cho dataset ML</h2>
+    <form class="filter-row" method="post" action="{{ url_for('admin_logs_label') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input class="input" name="ip" placeholder="IP" required>
+      <input class="input" name="from" placeholder="Từ: 2026-11-05 10:00:00" required>
+      <input class="input" name="to" placeholder="Đến: 2026-11-05 10:30:00" required>
+      <select class="select" name="label">
+        {% for l in ('normal', 'sqli', 'xss', 'bruteforce', 'dos', 'other') %}<option>{{ l }}</option>{% endfor %}
+      </select>
+      <button class="btn btn-primary btn-sm" type="submit">Gán nhãn</button>
+    </form>
+  </div>
+  {% endif %}
+
+  <div class="panel tbl-scroll">
+    {% if kind == 'login' %}
+    <table class="data">
+      <tr><th>ID</th><th>Thời gian</th><th>Username</th><th>IP</th><th>Kết quả</th><th>User-Agent</th></tr>
+      {% for r in rows %}<tr><td>{{ r['id'] }}</td><td>{{ r['login_time'] }}</td><td class="break">{{ r['username'] }}</td><td>{{ r['ip_address'] }}</td>
+        <td><span class="pill {{ 'ok' if r['success'] else 'bad' }}">{{ 'OK' if r['success'] else 'Sai' }}</span></td>
+        <td class="break">{{ r['user_agent'] }}</td></tr>{% endfor %}
+    </table>
+    {% else %}
+    <table class="data">
+      <tr><th>ID</th><th>Thời gian</th><th>IP</th><th>Method</th><th>Path</th><th>Query</th><th>Body</th><th>User</th><th>HTTP</th><th>ms</th><th>Mức</th><th>Nhãn</th></tr>
+      {% for r in rows %}<tr><td>{{ r['id'] }}</td><td>{{ r['ts'] }}</td><td>{{ r['ip_address'] }}</td><td>{{ r['method'] }}</td>
+        <td class="break">{{ r['path'] }}</td><td class="break">{{ r['query_string'] }}</td><td class="break">{{ r['body'] }}</td>
+        <td>{{ r['username'] or '' }}</td><td>{{ r['status_code'] }}</td><td>{{ r['duration_ms'] }}</td>
+        <td>{{ r['security_level'] }}</td><td>{{ r['label'] or '' }}</td></tr>{% endfor %}
+    </table>
+    {% endif %}
+  </div>
+  {{ pager('admin_logs', page, pages) }}
+</div>
+{% endblock %}

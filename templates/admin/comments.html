@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Kiểm duyệt bình luận{% endblock %}
+{% block content %}
+<div class="wrap mt">
+  <h1>Bình luận</h1>
+  {% include "admin/_nav.html" %}
+  <div class="panel tbl-scroll">
+    <table class="data">
+      <tr><th>ID</th><th>Truyện</th><th>Người gửi</th><th>Nội dung</th><th>Thời gian</th><th></th></tr>
+      {% for c in rows %}
+      <tr><td>{{ c['id'] }}</td><td>{{ c['title'] }}</td><td>{{ c['username'] }}</td>
+        <td class="break">{{ c['content'] }}</td><td>{{ c['created_at'].strftime('%d/%m %H:%M') }}</td>
+        <td><form method="post" action="{{ url_for('delete_comment', cid=c['id']) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="back" value="{{ url_for('admin_comments') }}">
+          <button class="btn btn-danger btn-sm" type="submit">Xóa</button></form></td></tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

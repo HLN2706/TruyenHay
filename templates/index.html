@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "_macros.html" import card %}
+{% block content %}
+<section class="hero">
+  <h1>Chào mừng đến với TruyenHay</h1>
+  <p class="lead">Trang web đọc truyện online miễn phí với nhiều thể loại hấp dẫn.</p>
+  <div class="ink-divider"></div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <h2><span class="flame">🔥</span> Truyện HOT</h2>
+    <a href="{{ url_for('truyen_list') }}" class="see-all">Xem tất cả →</a>
+  </div>
+  <div class="truyen-grid">{% for t in truyen_list %}{{ card(t) }}{% endfor %}</div>
+  <div class="wrap">
+    <div class="chips">
+      {% for c in cats %}<a class="chip" href="{{ url_for('truyen_list', category=c['category']) }}">{{ c['category'] }} ({{ c['n'] }})</a>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<div class="wrap-narrow">
+  <h2>💬 Bình luận mới nhất</h2>
+  {% for c in comments %}
+  <div class="comment-item">
+    <div class="who">{{ c.username }}<span class="when">trong «{{ c.title }}» · {{ c.created_at.strftime('%d/%m/%Y %H:%M') }}</span></div>
+    <div class="body">{{ (c.content|safe) if LOW else c.content }}</div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

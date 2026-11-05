@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Đăng nhập{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1>Đăng nhập</h1>
+    <p class="sub">Chào mừng đạo hữu quay lại TruyenHay</p>
+    {% if error %}<div class="flash error">{{ error }}</div>{% endif %}
+    <form method="post" action="{{ url_for('login') }}" autocomplete="off">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="next" value="{{ next or '' }}">
+      <div class="field"><label for="username">Tên đăng nhập</label>
+        <input type="text" id="username" name="username" placeholder="ví dụ: hieu" required></div>
+      <div class="field"><label for="password">Mật khẩu</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" required></div>
+      <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+    </form>
+    <div class="auth-foot">Chưa có tài khoản? <a href="{{ url_for('register') }}">Đăng ký</a></div>
+  </div>
+</div>
+{% endblock %}

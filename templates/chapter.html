@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ ch['title'] }} · {{ truyen['title'] }}{% endblock %}
+{% block content %}
+<article class="reader">
+  <a class="muted" href="{{ url_for('truyen_detail', tid=truyen['id']) }}">← {{ truyen['title'] }}</a>
+  <h1>{{ ch['title'] }}</h1>
+  <p>{{ ch['content'] }}</p>
+  <div class="reader-nav">
+    {% if ch['chapter_no'] > 1 %}<a class="btn btn-ghost" href="{{ url_for('chapter', tid=truyen['id'], n=ch['chapter_no'] - 1) }}">← Chương trước</a>{% else %}<span></span>{% endif %}
+    {% if ch['chapter_no'] < last %}<a class="btn btn-primary" href="{{ url_for('chapter', tid=truyen['id'], n=ch['chapter_no'] + 1) }}">Chương sau →</a>{% endif %}
+  </div>
+</article>
+{% endblock %}

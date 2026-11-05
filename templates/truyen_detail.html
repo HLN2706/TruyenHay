@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}{{ truyen['title'] }}{% endblock %}
+{% block content %}
+{% set cover = 'images/' + (truyen['image'] or 'tien_nghich.jpg')|string %}
+<section class="detail-hero">
+  <img class="detail-hero-bg" src="{{ url_for('static', filename=cover) }}" alt="">
+  <div class="detail-inner">
+    <div class="detail-cover"><img src="{{ url_for('static', filename=cover) }}" alt="{{ truyen['title'] }}"></div>
+    <div class="detail-info">
+      <span class="category-tag">{{ truyen['category'] }}</span>
+      <h1>{{ truyen['title'] }}</h1>
+      <div class="author">Tác giả: {{ truyen['author'] }} &nbsp; · &nbsp; Trạng thái: {{ truyen['status'] }}</div>
+      <p class="desc">{{ truyen['description'] }}</p>
+      <div class="stat-row">
+        <div class="stat"><b>{{ truyen['views']|num }}</b>Lượt xem</div>
+        <div class="stat"><b>{{ comments|length }}</b>Bình luận</div>
+        <div class="stat"><b class="rating">★ {{ rating['avg'] }}</b>{{ rating['n'] }} đánh giá</div>
+        <div class="stat"><b>#{{ truyen['id'] }}</b>Mã truyện</div>
+      </div>
+      <div class="hero-actions">
+        {% if chapters %}<a href="{{ url_for('chapter', tid=truyen['id'], n=chapters[0]['chapter_no']) }}" class="btn btn-primary">▶ Đọc ngay</a>{% endif %}
+        {% if session.get('user_id') %}
+        <form method="post" action="{{ url_for('bookmark', tid=truyen['id']) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-ghost" type="submit">{{ '★ Đã lưu' if bookmarked else '☆ Lưu vào tủ truyện' }}</button>
+        </form>
+        <form class="inline-form" method="post" action="{{ url_for('rate', tid=truyen['id']) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <select class="select" name="score">
+            {% for s in range(5, 0, -1) %}<option value="{{ s }}" {{ 'selected' if my_score == s }}>{{ s }} sao</option>{% endfor %}
+          </select>
+          <button class="btn btn-ghost btn-sm" type="submit">Đánh giá</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <h2>📖 Danh sách chương</h2>
+  <div class="chapter-list">
+    {% for c in chapters %}<a href="{{ url_for('chapter', tid=truyen['id'], n=c['chapter_no']) }}">{{ c['title'] }}</a>{% endfor %}
+  </div>
+</div>
+
+<div class="comments-wrap" id="binh-luan">
+  <h2>💬 Bình luận</h2>
+  {% if LOW or session.get('user_id') %}
+  <form class="comment-form" method="post" action="{{ url_for('truyen_detail', tid=truyen['id']) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% if LOW %}
+    <input type="text" name="username" placeholder="Tên của bạn" value="{{ session.get('username', '') }}" required>
+    {% else %}
+    <div class="muted">Bình luận với tên <b>{{ session.get('username') }}</b></div><br>
+    {% endif %}
+    <textarea name="content" rows="3" placeholder="Chia sẻ cảm nhận của bạn về truyện này..." required></textarea>
+    <button type="submit" class="btn btn-primary">Gửi bình luận</button>
+  </form>
+  {% else %}
+  <p class="muted">Vui lòng <a href="{{ url_for('login', next=request.path) }}"><u>đăng nhập</u></a> để bình luận.</p>
+  {% endif %}
+
+  {% for c in comments %}
+  <div class="comment-item">
+    <div class="row">
+      <div class="who">{{ c.username }}<span class="when">{{ c.created_at.strftime('%d/%m/%Y %H:%M') }}</span></div>
+      {% if session.get('user_id') %}
+      <form method="post" action="{{ url_for('delete_comment', cid=c.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-ghost btn-sm" type="submit">Xóa</button>
+      </form>
+      {% endif %}
+    </div>
+    {# LOW: |safe => Stored XSS #}
+    <div class="body">{{ (c.content|safe) if LOW else c.content }}</div>
+  </div>
+  {% else %}
+  <p class="muted">Chưa có bình luận nào. Hãy là người đầu tiên!</p>
+  {% endfor %}
+</div>
+{% endblock %}

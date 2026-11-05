@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Hồ sơ {{ u['username'] }}{% endblock %}
+{% block content %}
+<div class="wrap-narrow mt">
+  <div class="profile-head">
+    <div class="avatar">{{ (u['username'] or '?')[:1]|upper }}</div>
+    <div>
+      {# LOW: |safe => Stored XSS qua display_name / bio #}
+      <h1 class="nomargin">{{ (u['display_name']|safe) if LOW else u['display_name'] }}</h1>
+      <div class="muted">@{{ u['username'] }} · <span class="pill">{{ u['role'] }}</span>
+        {% if not u['is_active'] %}<span class="pill bad">bị khóa</span>{% endif %}</div>
+      <div class="muted">{{ u['email'] }}</div>
+    </div>
+  </div>
+  <div class="panel"><h2>Giới thiệu</h2>{{ (u['bio']|safe) if LOW else u['bio'] }}</div>
+
+  {% if is_me %}
+  <div class="grid-2">
+    <div class="panel">
+      <h2>Sửa hồ sơ</h2>
+      <form method="post" action="{{ url_for('profile_edit') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="field"><label>Tên hiển thị</label><input type="text" name="display_name" value="{{ u['display_name'] or '' }}"></div>
+        <div class="field"><label>Email</label><input type="text" name="email" value="{{ u['email'] or '' }}"></div>
+        <div class="field"><label>Giới thiệu</label><textarea name="bio" rows="3">{{ u['bio'] or '' }}</textarea></div>
+        <button class="btn btn-primary" type="submit">Lưu</button>
+      </form>
+    </div>
+    <div class="panel">
+      <h2>Đổi mật khẩu</h2>
+      <form method="post" action="{{ url_for('change_password') }}" autocomplete="off">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% if not LOW %}<div class="field"><label>Mật khẩu hiện tại</label><input type="password" name="old_password" required></div>{% endif %}
+        <div class="field"><label>Mật khẩu mới</label><input type="password" name="new_password" required></div>
+        <button class="btn btn-primary" type="submit">Đổi mật khẩu</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="panel"><h2>Tủ truyện</h2>
+    {% for m in marks %}<a class="chip" href="{{ url_for('truyen_detail', tid=m['id']) }}">{{ m['title'] }}</a> {% else %}<span class="muted">Trống.</span>{% endfor %}
+  </div>
+  <div class="panel"><h2>Bình luận gần đây</h2>
+    {% for c in cmts %}<div class="comment-item"><div class="who">{{ c.title }}</div><div class="body">{{ (c.content|safe) if LOW else c.content }}</div></div>
+    {% else %}<span class="muted">Chưa có.</span>{% endfor %}
+  </div>
+</div>
+{% endblock %}

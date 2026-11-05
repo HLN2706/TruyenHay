@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Đọc truyện online{% endblock %} — TruyenHay</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="lab-banner {{ LEVEL }}">
+  {% if LOW %}⚠ PHÒNG LAB · Chế độ LOW (cố ý chứa lỗ hổng) · chỉ chạy trong môi trường cô lập
+  {% else %}🛡 PHÒNG LAB · Chế độ HIGH (đã áp dụng biện pháp phòng thủ){% endif %}
+</div>
+{% set ep = request.endpoint %}
+<header class="site-header">
+  <div class="header-inner">
+    <a href="{{ url_for('index') }}" class="brand">
+      <div>
+        <div class="brand-text">TruyenHay</div>
+        <div class="brand-sub">Tiên hiệp | Huyền huyễn | Hiện đại</div>
+      </div>
+    </a>
+    <nav class="main-nav">
+      <a href="{{ url_for('index') }}" class="{{ 'active' if ep == 'index' }}">Trang chủ</a>
+      <a href="{{ url_for('truyen_list') }}" class="{{ 'active' if ep == 'truyen_list' }}">Truyện</a>
+      <form class="search-form" action="{{ url_for('truyen_list') }}" method="get">
+        <input type="text" name="q" placeholder="Tìm truyện..." value="{{ query or '' }}">
+        <button type="submit" aria-label="Tìm kiếm">🔍</button>
+      </form>
+      {% if session.get('user_id') %}
+        <a href="{{ url_for('bookmarks') }}">Tủ truyện</a>
+        {% if session.get('role') in ('admin', 'moderator') %}<a href="{{ url_for('admin_dashboard') }}">Quản trị</a>{% endif %}
+        <a href="{{ url_for('my_profile') }}">{{ session.get('username') }}</a>
+        <a href="{{ url_for('logout') }}">Đăng xuất</a>
+      {% else %}
+        <a href="{{ url_for('register') }}">Đăng ký</a>
+        <a href="{{ url_for('login') }}" class="cta">Đăng nhập</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+{% with msgs = get_flashed_messages(with_categories=true) %}
+{% if msgs %}<div class="flash-wrap">
+  {% for cat, m in msgs %}<div class="flash {{ 'success' if cat == 'success' else 'error' }}">{{ m }}</div>{% endfor %}
+</div>{% endif %}
+{% endwith %}
+
+{% block content %}{% endblock %}
+
+<footer class="site-footer">
+  <div>© 2026 TruyenHay Lab</div>
+  <div class="project-line">Đề tài: Tăng cường phát hiện tấn công (SQLi, XSS, DoS, Brute Force) dựa trên học máy / học sâu — Nhóm 1</div>
+</footer>
+</body>
+</html>

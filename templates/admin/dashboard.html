@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Quản trị{% endblock %}
+{% block content %}
+<div class="wrap mt">
+  <h1>Bảng điều khiển</h1>
+  {% include "admin/_nav.html" %}
+  <div class="stat-cards">
+    <div class="stat-card"><b>{{ stats['users'] }}</b><span>Người dùng</span></div>
+    <div class="stat-card"><b>{{ stats['truyen'] }}</b><span>Truyện</span></div>
+    <div class="stat-card"><b>{{ stats['comments'] }}</b><span>Bình luận</span></div>
+    <div class="stat-card"><b>{{ stats['failed24'] }}</b><span>Đăng nhập sai (24h)</span></div>
+    <div class="stat-card"><b>{{ stats['req1h'] }}</b><span>Request (1 giờ qua)</span></div>
+  </div>
+  <div class="panel">
+    <h2>IP có nhiều lần đăng nhập sai nhất (24h)</h2>
+    <table class="data"><tr><th>IP</th><th>Số lần sai</th></tr>
+      {% for f in failed %}<tr><td>{{ f['ip_address'] }}</td><td>{{ f['n'] }}</td></tr>
+      {% else %}<tr><td colspan="2" class="muted">Không có.</td></tr>{% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

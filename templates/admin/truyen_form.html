@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Sửa' if row else 'Thêm' }} truyện{% endblock %}
+{% block content %}
+<div class="wrap-narrow mt">
+  <h1>{{ 'Sửa truyện' if row else 'Thêm truyện' }}</h1>
+  {% include "admin/_nav.html" %}
+  <div class="panel">
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="field"><label>Tiêu đề</label><input type="text" name="title" value="{{ row['title'] if row else '' }}" required></div>
+      <div class="field"><label>Tác giả</label><input type="text" name="author" value="{{ row['author'] if row else '' }}"></div>
+      <div class="field"><label>Thể loại</label><input type="text" name="category" value="{{ row['category'] if row else '' }}"></div>
+      <div class="field"><label>Ảnh bìa (tên file trong static/images)</label><input type="text" name="image" value="{{ row['image'] if row and row['image'] else '' }}"></div>
+      <div class="field"><label>Trạng thái</label><input type="text" name="status" value="{{ row['status'] if row else 'Đang ra' }}"></div>
+      <div class="field"><label>Mô tả</label><textarea name="description" rows="6">{{ row['description'] if row else '' }}</textarea></div>
+      <button class="btn btn-primary" type="submit">Lưu</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

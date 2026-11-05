@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% from "_macros.html" import card %}
+{% block title %}Tủ truyện{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Tủ truyện của bạn</h1><p>Những truyện bạn đã lưu để đọc sau.</p></div>
+<section class="section">
+  <div class="truyen-grid">
+    {% for t in truyen_list %}{{ card(t) }}{% else %}<p class="muted">Bạn chưa lưu truyện nào.</p>{% endfor %}
+  </div>
+</section>
+{% endblock %}

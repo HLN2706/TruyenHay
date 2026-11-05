@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% from "_macros.html" import card, pager %}
+{% block title %}Danh sách truyện{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Danh sách truyện</h1>
+  <p>Khám phá toàn bộ kho truyện tiên hiệp, huyền huyễn, hiện đại tại TruyenHay.</p>
+</div>
+
+<div class="search-bar">
+  <form action="{{ url_for('truyen_list') }}" method="get">
+    <input type="text" name="q" placeholder="Nhập tên truyện, tác giả hoặc thể loại..." value="{{ query or '' }}">
+    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+  </form>
+</div>
+
+<div class="wrap">
+  <form class="filter-row" action="{{ url_for('truyen_list') }}" method="get">
+    <input type="hidden" name="q" value="{{ query or '' }}">
+    <select class="select" name="category">
+      <option value="">Tất cả thể loại</option>
+      {% for c in cats %}<option value="{{ c['category'] }}" {{ 'selected' if c['category'] == category }}>{{ c['category'] }}</option>{% endfor %}
+    </select>
+    <select class="select" name="sort">
+      <option value="id" {{ 'selected' if sort == 'id' }}>Mới thêm</option>
+      <option value="views" {{ 'selected' if sort == 'views' }}>Lượt xem</option>
+      <option value="title" {{ 'selected' if sort == 'title' }}>Tên A–Z</option>
+    </select>
+    <select class="select" name="order">
+      <option value="asc" {{ 'selected' if order == 'asc' }}>Tăng dần</option>
+      <option value="desc" {{ 'selected' if order == 'desc' }}>Giảm dần</option>
+    </select>
+    <button class="btn btn-ghost btn-sm" type="submit">Lọc</button>
+  </form>
+</div>
+
+{% if error %}<div class="flash-wrap"><div class="flash error">Lỗi truy vấn: {{ error }}</div></div>{% endif %}
+
+{% if query %}
+<div class="search-result-note">
+  {# LOW: |safe => Reflected XSS #}
+  Kết quả tìm kiếm cho: <b>{{ (query|safe) if LOW else query }}</b> — {{ total }} truyện được tìm thấy.
+</div>
+{% endif %}
+
+<section class="section">
+  <div class="truyen-grid">
+    {% for t in truyen_list %}{{ card(t) }}
+    {% else %}<p class="muted">Không tìm thấy truyện nào phù hợp.</p>{% endfor %}
+  </div>
+  {{ pager('truyen_list', page, pages) }}
+</section>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Quản lý truyện{% endblock %}
+{% block content %}
+<div class="wrap mt">
+  <h1>Truyện</h1>
+  {% include "admin/_nav.html" %}
+  <p><a class="btn btn-primary btn-sm" href="{{ url_for('admin_truyen_form') }}">+ Thêm truyện</a></p>
+  <div class="panel tbl-scroll">
+    <table class="data">
+      <tr><th>ID</th><th>Tiêu đề</th><th>Tác giả</th><th>Thể loại</th><th>Lượt xem</th><th>Trạng thái</th><th></th></tr>
+      {% for t in rows %}
+      <tr><td>{{ t['id'] }}</td><td>{{ t['title'] }}</td><td>{{ t['author'] }}</td><td>{{ t['category'] }}</td>
+        <td>{{ t['views']|num }}</td><td>{{ t['status'] }}</td>
+        <td><a class="btn btn-ghost btn-sm" href="{{ url_for('admin_truyen_form', tid=t['id']) }}">Sửa</a></td></tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}
